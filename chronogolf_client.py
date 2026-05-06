@@ -47,11 +47,10 @@ if __name__ == "__main__":
     
     if data:
         print("✅ Success! We have live data.")
-        # Let's see how many tee times came back
-        if isinstance(data, list):
-            print(f"Found {len(data)} available slots.")
-        else:
-            # Sometimes the response is a dictionary with a 'data' key
-            print("Data received (JSON Object)")
-    else:
-        print("❌ Failed to fetch data. Your cookie might have expired.")
+        # This tells us how the data is organized
+        if isinstance(data, dict):
+            print(f"Top-level keys: {list(data.keys())}")
+        elif isinstance(data, list):
+            print(f"Data is a list with {len(data)} items.")
+            if len(data) > 0:
+                print(f"Sample item keys: {list(data[0].keys())}")
