@@ -43,6 +43,7 @@ class ChronogolfClient:
             print(f"Error: {e}")
             return None
 
+# View the output of this file directly to check the API response structure
 if __name__ == "__main__":
     client = ChronogolfClient()
     

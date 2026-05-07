@@ -8,7 +8,7 @@ def run_monitor():
     
     print(f"--- ChronoGolf Monitor Started for {target_date} ---")
     
-    # Loop indefinitely to keep checking for new tee times
+    # Infinite loop to keep checking for new tee times
     while True:
         raw_data = client.fetch_real_data(target_date)
         
@@ -20,14 +20,14 @@ def run_monitor():
                 # Logic: Find a slot under R500 before 9:00 AM
                 for slot in available_slots:
                     if slot['price'] <= 500:
-                        print(f"🎯 MATCH FOUND: {slot['time']} for R{slot['price']} on hole {slot['hole']}")
+                        print(f"🎯 MATCH FOUND: {slot['holes_available']} hole {slot['players']} ball at {slot['time']} for R{slot['price']} per person on hole {slot['hole']}")
                         # This is where we will trigger the notification next!
             else:
                 print("No slots found yet. Keeping watch... 👀")
         
         # Wait 5 minutes before checking again to avoid being banned
-        print("Waiting 10 seconds...")
-        time.sleep(5) 
+        print("Waiting 5 minutes...")
+        time.sleep(300) 
 
 if __name__ == "__main__":
     run_monitor()
