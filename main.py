@@ -4,7 +4,7 @@ from parser import TeeTimeParser
 
 def run_monitor():
     client = ChronogolfClient()
-    target_date = "2026-05-20"  # Change this to your desired date (YYYY-MM-DD)
+    target_date = "2026-05-15"  # Change this to your desired date (YYYY-MM-DD)
     
     print(f"--- ChronoGolf Monitor Started for {target_date} ---")
     
