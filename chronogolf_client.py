@@ -17,6 +17,7 @@ class ChronogolfClient:
         self.market_url = "https://www.chronogolf.com/marketplace/v2/teetimes"
         self.freeze_base_url = "https://www.chronogolf.com/private_api/teetimes"
         self.reserve_url = "https://www.chronogolf.com/marketplace/reservations"
+        self.csrf_token = os.getenv("CHRONOGOLF_CSRF_TOKEN") # <-- Load the new token
         
         # Our "Browser Mimic" headers
         self.headers = {
@@ -25,7 +26,8 @@ class ChronogolfClient:
             "referer": self.referer,
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
             "Host": "www.chronogolf.com",
-            "Content-Type": "application/json" # Crucial for the POST requests
+            "Content-Type": "application/json", # Crucial for the POST requests
+            "x-csrf-token": self.csrf_token  # <-- Inject the token into the headers!
         }
 
     def fetch_real_data(self, target_date):
@@ -103,12 +105,46 @@ class ChronogolfClient:
             print(f"Error confirming booking: {e}")
             return None
 
-# Quick test block
+# # Quick test block
+# if __name__ == "__main__":
+#     client = ChronogolfClient()
+#     print("ChronoGolf Client is ready!")
+#     # To test the full flow, you would chain them here:
+#     # data = client.fetch_real_data("2026-05-15")
+#     # ... parse data to find a teetime_id ...
+#     # client.freeze_tee_time(teetime_id)
+#     # client.book_tee_time(teetime_id)
+
 if __name__ == "__main__":
     client = ChronogolfClient()
-    print("ChronoGolf Client is ready!")
-    # To test the full flow, you would chain them here:
-    # data = client.fetch_real_data("2026-05-15")
-    # ... parse data to find a teetime_id ...
-    # client.freeze_tee_time(teetime_id)
-    # client.book_tee_time(teetime_id)
+    
+    # 1. Pick a date a few days from now that you know has openings
+    test_date = "2026-05-18" # Change this if needed!
+    print(f"--- Starting Live API Test for {test_date} ---")
+    
+    # STEP 1: Fetch the data
+    data = client.fetch_real_data(test_date)
+    
+    if data and 'teetimes' in data and len(data['teetimes']) > 0:
+        # Grab the very first available tee time in the list
+        first_slot = data['teetimes'][0]
+        test_id = first_slot.get('id')
+        test_time = first_slot.get('start_time')
+        
+        print(f"🎯 Target Acquired: Slot at {test_time} (ID: {test_id})")
+        
+        # STEP 2: Freeze the slot (Safe to test - just goes to your cart)
+        print("🧊 Attempting to freeze slot...")
+        freeze_result = client.freeze_tee_time(test_id)
+        
+        if freeze_result:
+            print("\n✅ FREEZE SUCCESSFUL! Open your browser and check your Chrono Golf cart right now.")
+            
+            # STEP 3: The Final Booking (DANGER ZONE ⚠️)
+            # Remove the '#' from the two lines below ONLY if you actually want to book this slot!
+            
+            print("🚀 Firing final booking payload...")
+            client.book_tee_time(test_id)
+            
+    else:
+        print("❌ No tee times found for this date. Try changing 'test_date'.")
